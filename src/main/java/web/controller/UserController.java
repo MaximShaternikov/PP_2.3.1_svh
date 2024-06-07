@@ -3,9 +3,12 @@ package web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import web.model.User;
 import web.service.UserService;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/users")
@@ -17,7 +20,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping()
+    @GetMapping
     public String getAllUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
         return "users";
@@ -30,7 +33,10 @@ public class UserController {
     }
 
     @PostMapping()
-    public String create(@ModelAttribute("user") User user) {
+    public String create(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "new";
+        }
         userService.save(user);
         return "redirect:/users";
     }
@@ -42,14 +48,17 @@ public class UserController {
     }
 
     @PostMapping("/edit")
-    public String edit(@RequestParam("id") long id, @ModelAttribute("user") User user) {
-        User existsUser = userService.getUserById(id);
-        existsUser.setId((int) id);
-        existsUser.setFirstName(user.getFirstName());
-        existsUser.setLastName(user.getLastName());
-        existsUser.setAge(user.getAge());
+    public String edit(@RequestParam("id") long id, @ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "edit";
+        }
+        userService.update(id, user);
+        return "redirect:/users";
+    }
 
-        userService.update(existsUser);
+    @PostMapping("/delete")
+    public String delete(@RequestParam("id") long id) {
+        userService.delete(id);
         return "redirect:/users";
     }
 }

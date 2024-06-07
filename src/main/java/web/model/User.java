@@ -1,6 +1,8 @@
 package web.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
 
 @Entity
@@ -8,31 +10,34 @@ import java.util.Objects;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @Column(name = "firstName")
+    @NotEmpty(message = "Should not be empty")
+    @Column(name = "firstName", length = 45)
     private String firstName;
 
-    @Column(name = "lastName")
+    @NotEmpty(message = "Should not be empty")
+    @Column(name = "lastName", length = 45)
     private String lastName;
 
+    @Min(value = 1, message = "Should be greater than 0")
     @Column(name = "age")
-    private Byte age;
+    private byte age;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, Byte age) {
+    public User(String firstName, String lastName, byte age) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -56,7 +61,7 @@ public class User {
         return age;
     }
 
-    public void setAge(Byte age) {
+    public void setAge(byte age) {
         this.age = age;
     }
 
@@ -69,8 +74,8 @@ public class User {
             return false;
         }
         User user = (User) o;
-        return (id == user.id) &&
-                (age == user.age) &&
+        return (age == user.age) &&
+                (Objects.equals(id, user.id)) &&
                 (Objects.equals(firstName, user.firstName)) &&
                 (Objects.equals(lastName, user.lastName));
     }
