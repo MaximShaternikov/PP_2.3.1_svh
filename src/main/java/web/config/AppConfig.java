@@ -45,13 +45,7 @@ public class AppConfig {
         entityManager.setDataSource(getDataSource());
         entityManager.setPackagesToScan(env.getRequiredProperty("db.entity.package"));
         entityManager.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-
-        Properties props = new Properties();
-        props.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
-        props.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-        props.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
-
-        entityManager.setJpaProperties(props);
+        entityManager.setJpaProperties(getHibernateProperties());
         return entityManager;
     }
 
@@ -60,5 +54,13 @@ public class AppConfig {
         JpaTransactionManager manager = new JpaTransactionManager();
         manager.setEntityManagerFactory(getEntityManagerFactory().getObject());
         return manager;
+    }
+
+    private Properties getHibernateProperties() {
+        Properties props = new Properties();
+        props.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
+        props.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+        props.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        return props;
     }
 }
